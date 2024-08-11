@@ -83,9 +83,9 @@
             border-top: 1px solid #ddd;
         }
 
-        .footer .logo {
-            display: flex;
-            align-items: center;
+        .logo {
+            width: 150px;
+            height: 100px;
         }
 
         .footer .logo img {
@@ -111,7 +111,7 @@
 
         .footer .contact-info .social-icons {
             display: flex;
-            justify-content: flex-end;
+            justify-content: flex-start;
             margin-bottom: 5px;
         }
 
@@ -125,13 +125,24 @@
             font-size: 14px;
             color: #555;
         }
+
+        .icon {
+            width: 30;
+            height: 30;
+        }
+
+        .divider {
+            width: 300px;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
         <div class="header">
-            <img src="{{ asset('images/logo.jpeg') }}" alt="Logo" style="width: 150px; height: 200px;">
+            <img class="logo" src="https://www.seven-healthcare.com/wp-content/uploads/2020/03/healthcare-logo.png"
+                alt="Logo">
+            <div class='divider'></div>
             <h1>Patient Update Record</h1>
         </div>
         <div class="patient-info">
@@ -169,21 +180,21 @@
         @endif
 
         <div class="footer">
-            <div class="logo">
-                <img src="{{ asset('images/logo.jpeg') }}" alt="Logo">
+            <div>
+                <img class="logo"
+                    src="https://www.seven-healthcare.com/wp-content/uploads/2020/03/healthcare-logo.png"
+                    alt="Logo">
                 <div class="company-info">
                     <h2>Seven Healthcare</h2>
                     <p>Multi-Award-Winning Healthcare Recruitment</p>
                 </div>
             </div>
-            <div class="contact-info">
-                <div class="social-icons">
-                    <img src="{{ asset('images/fb-icon.png') }}" alt="Facebook">
-                    <img src="{{ asset('images/ig-icon.png') }}" alt="Instagram">
-                    <img src="{{ asset('images/x-icon.png') }}" alt="Twitter">
+            <div class='divider'></div>
+            <div>
+                <div class='contact'>
+                    <p>Developed By: Atairoro Joshua</p>
+                    <p>talk2king.aj@gmail.com | +123456789</p>
                 </div>
-                <p>Developed By: Atairoro Joshua</p>
-                <p>talk2king.aj@gmail.com | +123456789</p>
             </div>
         </div>
     </div>
