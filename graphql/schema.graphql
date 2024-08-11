@@ -1,0 +1,32 @@
+scalar DateTime
+
+type Query {
+    laboratoryTests(category: String): [LaboratoryTest!]! @field(resolver: "App\\GraphQL\\Queries\\LaboratoryTestQuery")
+}
+
+type Mutation {
+    saveMedicalRecord(input: SaveMedicalRecordInput!): MedicalRecord! @field(resolver: "App\\GraphQL\\Mutations\\SaveMedicalRecordMutation")
+}
+
+type LaboratoryTest {
+    id: ID!
+    name: String!
+    category: String!
+}
+
+input SaveMedicalRecordInput {
+    xray: [String]
+    ultrasound: [String]
+    ct_scan: [String]
+    mri: [String]
+    patient_name: String!
+}
+
+type MedicalRecord {
+    id: ID!
+    xray: [String]
+    ultrasound: [String]
+    ct_scan: [String]
+    mri: [String]
+    patient_name: String!
+}
