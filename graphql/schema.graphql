@@ -1,11 +1,18 @@
-scalar DateTime
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
 
-type Query {
-    laboratoryTests(category: String): [LaboratoryTest!]! @field(resolver: "App\\GraphQL\\Queries\\LaboratoryTestQuery")
+"A date string with format 'Y-m-d', e.g. '2011-05-23'."
+scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
+
+type Query  {
+    laboratoryTests(category: String): [LaboratoryTest!]! @guard  @field(resolver: "App\\GraphQL\\Queries\\LaboratoryTestQuery")
+
+    medicalRecords: [MedicalRecord!]! @guard @field(resolver: "App\\GraphQL\\Queries\\MedicalRecordQuery")
+
+    medicalRecords(patient_name: String): [MedicalRecord] @guard @field(resolver: "App\\GraphQL\\Queries\\MedicalRecordQuery")
 }
 
 type Mutation {
-    saveMedicalRecord(input: SaveMedicalRecordInput!): MedicalRecord! @field(resolver: "App\\GraphQL\\Mutations\\SaveMedicalRecordMutation")
+    saveMedicalRecord(input: SaveMedicalRecordInput!):  MedicalRecord! @guard @field(resolver: "App\\GraphQL\\Mutations\\SaveMedicalRecordMutation")
 }
 
 type LaboratoryTest {
@@ -28,5 +35,6 @@ type MedicalRecord {
     ultrasound: [String]
     ct_scan: [String]
     mri: [String]
-    patient_name: String!
+    patient_name: String
+    created_at: DateTime!
 }

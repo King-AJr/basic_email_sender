@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Providers;
+use App\Auth\GraphQLSanctumGuard;
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\ServiceProvider;

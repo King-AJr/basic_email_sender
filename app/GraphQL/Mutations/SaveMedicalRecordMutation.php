@@ -1,12 +1,12 @@
 <?php
 
-
 namespace App\GraphQL\Mutations;
 
 use App\Models\MedicalRecord;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PatientUpdateMail; // Import the Mailable class
 use GraphQL\Error\Error;
-
 
 class SaveMedicalRecordMutation
 {
@@ -27,7 +27,6 @@ class SaveMedicalRecordMutation
             throw new Error($validator->errors()->first());
         }
 
-        // Example of additional checks or processing
         // Ensure that at least one of the tests has been provided
         if (empty($args['input']['xray']) &&
             empty($args['input']['ultrasound']) &&
@@ -37,6 +36,21 @@ class SaveMedicalRecordMutation
         }
 
         // Save the medical record to the database
-        return MedicalRecord::create($args['input']);
+        $medicalRecord = MedicalRecord::create($args['input']);
+
+        // Attempt to send the email notification
+        try {
+            Mail::to("talk2ata@gmail.com")->send(new PatientUpdateMail(
+                $args['input']['patient_name'] ?? 'N/A',
+                $args['input']['xray'] ?? [],
+                $args['input']['ultrasound'] ?? [],
+                $args['input']['ct_scan'] ?? [],
+                $args['input']['mri'] ?? []
+            ));
+        } catch (\Exception $e) {
+            \Log::error('Email sending failed: ' . $e->getMessage());
+        }
+
+        return $medicalRecord;
     }
 }

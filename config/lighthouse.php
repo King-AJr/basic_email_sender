@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 return [
     /*
@@ -38,6 +40,8 @@ return [
             // middleware, this delegates auth and permission checks to the field level.
             Nuwave\Lighthouse\Http\Middleware\AttemptAuthentication::class,
 
+            Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+
             // Logs every incoming GraphQL query.
             // Nuwave\Lighthouse\Http\Middleware\LogGraphQLQueries::class,
         ],
@@ -61,7 +65,7 @@ return [
     |
     */
 
-    'guards' => null,
+    'guard' => 'web',
 
     /*
     |--------------------------------------------------------------------------
@@ -255,10 +259,12 @@ return [
     */
 
     'error_handlers' => [
+        \App\Exceptions\CustomGraphqlAuthExceptionHandler::class,
         Nuwave\Lighthouse\Execution\AuthenticationErrorHandler::class,
         Nuwave\Lighthouse\Execution\AuthorizationErrorHandler::class,
         Nuwave\Lighthouse\Execution\ValidationErrorHandler::class,
         Nuwave\Lighthouse\Execution\ReportingErrorHandler::class,
+
     ],
 
     /*
@@ -494,7 +500,7 @@ return [
 
 
     'scalars' => [
-    'DateTime' => \App\GraphQL\Scalars\DateTimeScalar::class,
-],
+        'DateTime' => \App\GraphQL\Scalars\DateTimeScalar::class,
+    ],
 
 ];

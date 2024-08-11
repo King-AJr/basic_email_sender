@@ -2,134 +2,283 @@
 
 This project provides a simple API for managing patient medical tests and records. It includes two main routes: one for fetching available laboratory tests and another for submitting patient test records.
 
-## Features
+## Overview
 
-- **Retrieve Available Laboratory Tests**: Fetch a list of available medical tests such as X-Rays, Ultrasound Scans, CT Scans, and MRIs.
-- **Submit Patient Test Records**: Validate and store patient test records, and send an email notification with the details.
+This project provides a comprehensive web service designed to manage laboratory tests and medical records. It includes both GraphQL and RESTful APIs, allowing for flexible and powerful interactions with the data. Additionally, when medical records are saved, an email notification is sent to the administrator.
 
-## Routes
+## Folder Structure
 
-### 1. Retrieve Available Laboratory Tests
+Here’s a breakdown of the project's folder structure:
 
-**Endpoint**: `GET /laboratory-tests`
-
-**Description**: Returns a list of available medical tests with specific options for each test type.
-
-**Sample Response**:
-```json
-{
-    "x_ray": [
-        "Chest",
-        "Cervical Vertebrae",
-        "Thoracic Vertebrae",
-        "Lumbar Vertebrae",
-        "Lumbo Sacral Vertebrae",
-        ...
-    ],
-    "ultrasound_scan": [
-        "Obstetric",
-        "Abdominal",
-        "Pelvis",
-        "Prostate",
-        "Breast",
-        "Thyroid"
-    ],
-    "ct_scan": [
-        "Head",
-        "Chest",
-        "Abdomen",
-        "Pelvis",
-        "Spine"
-    ],
-    "mri": [
-        "Brain",
-        "Spine",
-        "Knee",
-        "Shoulder",
-        "Abdomen"
-    ]
-}
+```
+project-root/
+│
+├── app/
+│   ├── GraphQL/
+│   │   ├── Queries/
+│   │   │   ├── LaboratoryTestQuery.php      # Handles queries related to laboratory tests
+│   │   │   └── MedicalRecordQuery.php         # Handles queries related to medical records
+│   │   └── Mutations/
+│   │       └── SaveMedicalRecordMutation.php  # Handles mutations for saving medical records
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── Api/
+│   │   │   │   └── AuthController.php         # Manages user authentication (registration and login)
+│   │   │   └── LaboratoryTestController.php   # Manages laboratory test data and medical record updates
+│   │   └── Middleware/
+│   └── Models/
+│       ├── LaboratoryTest.php                  # Model for laboratory tests
+│       └── MedicalRecord.php                   # Model for medical records
+├── database/
+│   ├── migrations/                             # Database migrations for creating tables
+│   └── seeds/                                 # Database seeders for initial data
+├── resources/
+│   ├── views/                                 # Blade templates (if any)
+│   └── lang/                                  # Language files (if any)
+├── routes/
+│   └── api.php                                # API routes definition
+├── .env                                      # Environment configuration file
+├── composer.json                             # PHP dependencies
+├── package.json                              # Node.js dependencies
+└── README.md                                 # This file
 ```
 
-### 2. Submit Patient Test Records
+## Authentication
 
-**Endpoint**: `POST /patient-record-update`
+### Authorization Token
 
-**Description**: Accepts patient medical test records, validates the data, and sends an email notification.
+To access GraphQL queries or mutations, or to use the REST API routes, you must include a valid authorization token. This token is validated using Laravel Sanctum.
 
-**Request Data**:
-- `patient_name`: (required) The name of the patient.
-- `x_ray`: (optional) An array of X-Ray tests performed.
-- `ultrasound_scan`: (optional) An array of Ultrasound scans performed.
-- `ct_scan`: (optional) An array of CT scans performed.
-- `mri`: (optional) An array of MRI scans performed.
-
-**Sample Request**:
-```json
-{
-    "patient_name": "John Doe",
-    "x_ray": ["Chest", "Knee Joint"],
-    "ultrasound_scan": ["Abdominal"],
-    "ct_scan": ["Head"],
-    "mri": ["Brain"]
-}
+**Example Bearer Token**:
+```
+Authorization: Bearer 8|JUBHBDCwbGChXDacl12h5UnCZp2M6swEPzzs0AmC9ac5418f
 ```
 
-**Sample Response**:
-- On Success: `201 Created`
+### Obtaining a Token
+
+Use the following credentials to obtain a new bearer token via the login endpoint:
+
+- **Email**: `talk2king.aj@gmail.com`
+- **Password**: `mypassword`
+
+### GraphQL Authentication
+
+- **Custom Exception Handler**: GraphQL endpoints use a custom exception handler to manage authentication errors. If an unauthenticated request is made, the response will be:
+
   ```json
   {
-      "message": "Medical data submitted successfully"
+    "message": "Please include a valid authorization token"
   }
   ```
 
-- On Validation Error: `422 Unprocessable Entity`
+### REST API Authentication
+
+- **Custom Exception Handler**: REST API routes use a custom exception handler to return a JSON response with a `401 Unauthorized` status code if the authorization token is missing or invalid:
+
   ```json
   {
-      "error": "Validation failed",
-      "details": {
-          "x_ray.0": ["The selected x_ray.0 is invalid."]
+    "message": "Please include a valid authorization token"
+  }
+  ```
+
+## GraphQL Endpoints
+
+### Queries
+
+- **`laboratoryTests(category: String)`**:
+  - **Description**: Fetches laboratory tests, optionally filtered by category.
+  - **Parameters**:
+    - `category` (optional): The category to filter tests (e.g., "xray").
+  - **Example Query**:
+    ```graphql
+    query {
+      laboratoryTests(category: "xray") {
+        id
+        name
+        category
       }
-  }
-  ```
-
-- On Internal Server Error: `500 Internal Server Error`
-  ```json
-  {
-      "error": "An internal server error occurred"
-  }
-  ```
-
-## Installation
-
-1. Clone the repository:
-    ```bash
-    git clone <repository_url>
-    ```
-2. Navigate to the project directory:
-    ```bash
-    cd medical-test-management
-    ```
-3. Install the dependencies:
-    ```bash
-    composer install
-    ```
-4. Configure your environment settings in the `.env` file.
-
-## Usage
-
-1. Run the migrations:
-    ```bash
-    php artisan migrate
-    ```
-2. Start the application:
-    ```bash
-    php artisan serve
+    }
     ```
 
-## Testing
+- **`medicalRecords(patient_name: String)`**:
+  - **Description**: Fetches medical records, optionally filtered by patient name.
+  - **Parameters**:
+    - `patient_name` (optional): The name of the patient to filter records.
+  - **Example Query**:
+    ```graphql
+    query {
+      medicalRecords(patient_name: "John Doe") {
+        id
+        xray
+        ultrasound
+        ct_scan
+        mri
+        patient_name
+        created_at
+      }
+    }
+    ```
 
-Use tools like Postman or cURL to test the API endpoints.
+### Mutations
 
+- **`saveMedicalRecord(input: SaveMedicalRecordInput!)`**:
+  - **Description**: Saves a medical record and sends an email notification to the admin.
+  - **Parameters**:
+    - `input`: The input object containing medical record data.
+  - **Example Mutation**:
+    ```graphql
+    mutation {
+      saveMedicalRecord(input: {
+        xray: ["Chest"],
+        ultrasound: ["Obstetric"],
+        ct_scan: ["Head"],
+        mri: ["Brain"],
+        patient_name: "John Doe"
+      }) {
+        id
+        patient_name
+        xray
+        ultrasound
+        ct_scan
+        mri
+        created_at
+      }
+    }
+    ```
+  - **Note**: An email notification will be sent to `talk2ata@gmail.com` when a medical record is saved.
 
+## REST API Endpoints
 
+### Public Routes
+
+- **`POST /register`**:
+  - **Description**: Registers a new user and returns an authentication token.
+  - **Request Body**:
+    ```json
+    {
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "password": "password123"
+    }
+    ```
+  - **Response**:
+    ```json
+    {
+      "data": {
+        "id": 1,
+        "name": "John Doe",
+        "email": "john.doe@example.com"
+      },
+      "access_token": "your-new-token",
+      "token_type": "Bearer"
+    }
+    ```
+
+- **`POST /login`**:
+  - **Description**: Authenticates a user and returns an authentication token.
+  - **Request Body**:
+    ```json
+    {
+      "email": "talk2king.aj@gmail.com",
+      "password": "mypassword"
+    }
+    ```
+  - **Response**:
+    ```json
+    {
+      "message": "Login successful",
+      "access_token": "your-new-token",
+      "token_type": "Bearer"
+    }
+    ```
+
+### Protected Routes
+
+- **`GET /laboratory-tests`**:
+  - **Description**: Retrieves available laboratory tests grouped by category.
+  - **Headers**:
+    ```http
+    Authorization: Bearer <your-token>
+    ```
+  - **Response**:
+    ```json
+    {
+      "xray": ["Chest", "Cervical Vertebrae"],
+      "ultrasound_scan": ["Obstetric", "Abdominal"],
+      "ct_scan": ["Head", "Chest"],
+      "mri": ["Brain", "Spine"]
+    }
+    ```
+
+- **`POST /patient-record-update`**:
+  - **Description**: Submits a medical record and sends an email notification to the admin.
+  - **Headers**:
+    ```http
+    Authorization: Bearer <your-token>
+    ```
+  - **Request Body**:
+    ```json
+    {
+      "patient_name": "John Doe",
+      "xray": ["Chest"],
+      "ultrasound_scan": ["Obstetric"],
+      "ct_scan": ["Head"],
+      "mri": ["Brain"]
+    }
+    ```
+  - **Response**:
+    ```json
+    {
+      "message": "Medical data submitted successfully"
+    }
+    ```
+
+## Setup and Installation
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/King-AJr/sevenz-healthcare-be-test.git
+   ```
+
+2. **Install Dependencies**:
+   Navigate to the project directory and install PHP and Node.js dependencies:
+   ```bash
+   cd your-project-directory
+   composer install
+   npm install
+   ```
+
+3. **Configure Environment**:
+   - Copy `.env.example` to `.env`:
+     ```bash
+     cp .env.example .env
+     ```
+   - Update the `.env` file with your environment settings, including database credentials and mail configurations.
+
+4. **Generate Application Key**:
+   ```bash
+   php artisan key:generate
+   ```
+
+5. **Run Migrations**:
+   Apply the database migrations to create the necessary tables:
+   ```bash
+   php artisan migrate
+   ```
+
+6. **Serve the Application**:
+   Start the local development server:
+   ```bash
+   php artisan serve
+   ```
+
+## Contributing
+
+Contributions to this project are welcome. Please adhere to the following guidelines:
+- Open an issue to discuss proposed changes or improvements.
+- Submit a pull request with a clear description of your changes.
+- Ensure that your code follows the project's coding standards and passes all tests.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

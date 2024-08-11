@@ -25,6 +25,6 @@ class CustomAuthenticationException extends Exception
      */
     public function render($request)
     {
-        return response()->json(['error' => 'Please include a valid authorization token'], Response::HTTP_UNAUTHORIZED);
+        return response()->json(['message' => 'Please include a valid authorization token'], Response::HTTP_UNAUTHORIZED);
     }
 }
