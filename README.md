@@ -1,6 +1,6 @@
 # Medical Test Management API
 
-This project provides a simple API for managing patient medical tests and records. It includes two main routes: one for fetching available laboratory tests and another for submitting patient test records.
+This project provides a simple API for managing patient medical tests and records. It includes two rest routes: one for fetching available laboratory tests and another for submitting patient test records and a GraphQL api to fetch data.
 
 ## Overview
 
