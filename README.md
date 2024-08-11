@@ -24,7 +24,7 @@ project-root/
 │   │   ├── Controllers/
 │   │   │   ├── Api/
 │   │   │   │   └── AuthController.php         # Manages user authentication (registration and login)
-│   │   │   └── LaboratoryTestController.php   # Manages laboratory test data and medical record updates
+│   │   │   └── LaboratoryTestController.php   # Manages laboratory test data and medical record updates with rest api
 │   │   └── Middleware/
 │   └── Models/
 │       ├── LaboratoryTest.php                  # Model for laboratory tests
