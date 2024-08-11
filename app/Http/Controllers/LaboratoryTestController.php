@@ -94,7 +94,7 @@ class LaboratoryTestController extends Controller
 
 
             // Attempt to send the email notification
-            Mail::to("talk2ata@gmail.com")->send(new PatientUpdateMail(
+            Mail::to(env('MAIL_TO'))->send(new PatientUpdateMail(
                 $validatedData["patient_name"],
                 $validatedData["x_ray"] ?? [],
                 $validatedData["ultrasound_scan"] ?? [],

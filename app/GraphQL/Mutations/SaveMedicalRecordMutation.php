@@ -12,8 +12,6 @@ class SaveMedicalRecordMutation
 {
     public function __invoke($_, array $args)
     {
-        \Log::info('Received input:', $args['input']);
-
         // Validate the input arrays
         $validator = Validator::make($args['input'], [
             'xray' => 'array|nullable',
@@ -28,10 +26,12 @@ class SaveMedicalRecordMutation
         }
 
         // Ensure that at least one of the tests has been provided
-        if (empty($args['input']['xray']) &&
+        if (
+            empty($args['input']['xray']) &&
             empty($args['input']['ultrasound']) &&
             empty($args['input']['ct_scan']) &&
-            empty($args['input']['mri'])) {
+            empty($args['input']['mri'])
+        ) {
             throw new Error('At least one test result must be provided.');
         }
 
@@ -40,7 +40,7 @@ class SaveMedicalRecordMutation
 
         // Attempt to send the email notification
         try {
-            Mail::to("talk2ata@gmail.com")->send(new PatientUpdateMail(
+            Mail::to(env('MAIL_TO'))->send(new PatientUpdateMail(
                 $args['input']['patient_name'] ?? 'N/A',
                 $args['input']['xray'] ?? [],
                 $args['input']['ultrasound'] ?? [],
