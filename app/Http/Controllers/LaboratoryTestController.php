@@ -103,7 +103,7 @@ class LaboratoryTestController extends Controller
             ));
 
             // Return a success response
-            return response()->json(["message" => "Medical data submitted successfully"], 201);
+            return $medical_record;
         } catch (\Illuminate\Validation\ValidationException $e) {
             Log::error('Validation error: ' . $e->getMessage());
             return response()->json(['error' => 'Validation failed', 'details' => $e->errors()], 422);
